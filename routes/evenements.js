@@ -10,7 +10,7 @@ router.get("/evenements", async (req, res, next) => {
   const idParticipant = req.body.idParticipant;
 
   const rows = db.query(
-    `SELECT Evenement.titre, Evenement.date, Evenement.image, Lieu.nomLieu, Lieu.ville, Organisateur.nomOrganisateur, (Evenement.nbPlaces - COUNT(Participant_Evenement.idEvenement)) AS "placesRestantes", CASE 
+    `SELECT Evenement.idEvenement, Evenement.titre, Evenement.date, Evenement.image, Lieu.nomLieu, Lieu.ville, Organisateur.nomOrganisateur, (Evenement.nbPlaces - COUNT(Participant_Evenement.idEvenement)) AS "placesRestantes", CASE 
     WHEN (SELECT idParticipant FROM Participant_Evenement WHERE idParticipant = "${idParticipant} "
         AND Participant_Evenement.idEvenement = Evenement.idEvenement) IS NULL THEN "non-inscrit" 
         ELSE "inscrit" END as "inscription"
@@ -26,6 +26,7 @@ router.get("/evenements", async (req, res, next) => {
       try {
         res.status(200).json({
           evenements: result,
+
           message: "Evenements fetched successfully !!!",
         });
       } catch (error) {
@@ -64,5 +65,32 @@ router.get("/evenement/:id", async (req, res, next) => {
     }
   );
 });
+router.delete(
+  "/evenement/participant/:idEvent/:idParticipant",
+  (req, res, next) => {
+    let idParticipant = req.params.idParticipant;
+    let idEvent = req.params.idEvent;
+
+    const deleteEvent = db.query(
+      `DELETE FROM participant_evenement WHERE idParticipant=${idParticipant} AND idEvenement=${idEvent}`,
+
+      (err, result, fields) => {
+        if ((idParticipant || idEvent) == null || undefined) {
+          return res.status(403).json({ message: "Invalid id" });
+        }
+        //   console.log("error====>", err);
+        console.log("result====>");
+        //   console.log("result length====>", result.length);
+        try {
+          res.status(200).json({
+            message: "Inscription deleted successfully !!!",
+          });
+        } catch (error) {
+          res.status(404).json({ error, messsage: "Démmerde-toi !" });
+        }
+      }
+    );
+  }
+);
 
 module.exports = router;
