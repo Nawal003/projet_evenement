@@ -33,5 +33,6 @@ router.post("/login", (req, res, next) => {
     }
   );
 });
+router.post("/user");
 
 module.exports = router;
