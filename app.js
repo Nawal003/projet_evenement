@@ -23,6 +23,7 @@ app.use((req, res, next) => {
 
 //Routes//
 app.use("/api", require("./routes/evenements"));
+app.use("/api", require("./routes/login"));
 
 //Route to test if API is online//
 app.get("/api", (req, res, next) => {
