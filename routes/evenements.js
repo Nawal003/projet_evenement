@@ -59,7 +59,7 @@ router.get("/evenements/:id", async (req, res, next) => {
           message: "Evenement fetched successfully !!!",
         });
       } catch (error) {
-        res.status(404).json({ error, messsage: "Démerde-toi !" });
+        res.status(404).json({ error, messsage: "Démmerde-toi !" });
       }
     }
   );
