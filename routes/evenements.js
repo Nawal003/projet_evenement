@@ -34,7 +34,7 @@ router.get("/evenements", async (req, res, next) => {
     }
   );
 });
-router.get("/evenements/:id", async (req, res, next) => {
+router.get("/evenement/:id", async (req, res, next) => {
   let idEvenement = req.params.id;
   const eventById = db.query(
     `SELECT evenement.description , evenement.titre, evenement.date, Evenement.nbPlaces, Evenement.image, Lieu.nomLieu, Lieu.ville, Organisateur.nomOrganisateur, (Evenement.nbPlaces - COUNT(Participant_Evenement.idEvenement)) AS "placesRestantes", CASE WHEN (SELECT idParticipant FROM Participant_Evenement WHERE idParticipant = 700 AND Participant_Evenement.idEvenement = Evenement.idEvenement) IS NULL THEN "non-inscrit" ELSE "inscrit" END as "inscription"
