@@ -1,6 +1,7 @@
 # Documentation API pour gestion_evenements
 
 # Liste des routes disponibles
+# Toutes les routes commencent par /api
   
 
 ## Route POST /user
