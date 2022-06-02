@@ -24,6 +24,9 @@ app.use((req, res, next) => {
 //Routes//
 app.use("/api", require("./routes/evenements"));
 app.use("/api", require("./routes/login"));
+app.use("/api", require("./routes/organisateurs"));
+app.use("/api", require("./routes/lieux"));
+app.use("/api", require("./routes/user"));
 
 //Route to test if API is online//
 app.get("/api", (req, res, next) => {

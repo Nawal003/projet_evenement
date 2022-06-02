@@ -33,26 +33,5 @@ router.post("/login", (req, res, next) => {
     }
   );
 });
-/** 
- * Créer un utilisateur. Mettre dans le body les 4 champs email, mdp, nom et prenom
- * @param {String} req.body.email Email du user
- * @param {String} req.body.mdp Mot de passe du user
- * @param {String} req.body.nom Nom du user
- * @param {String} req.body.prenom Prénom du user
- * */
-router.post("/user", (req, res, next) => {
-  // Récupères les infos du user
-  let email = req.body.email;
-  let password = req.body.mdp;
-  let prenom = req.body.prenom;
-  let nom = req.body.nom;
-
-  // Requête SQL
-  let query =`INSERT INTO participant (email, motDePasse, nom, prenom) VALUES ("${email}", "${password}", "${nom}", "${prenom}")`;
-  db.query(query, function (err, result) {
-    if (err) throw err;
-    res.send({message: "Utilisateur créé", user: result})
-  })
-});
 
 module.exports = router;
