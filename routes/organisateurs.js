@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../services/db");
+const jwtModule = require("../middlewares/jwt");
+
 
 /** Récupérer les organisateurs */
 router.get('/organisateurs', (req, res) => {
@@ -21,7 +23,7 @@ router.get('/organisateur/:id', (req, res) => {
 })
 
 /** Ajouter un organisateur */
-router.post('/organisateur', (req, res) => {
+router.post('/organisateur', jwtModule.authenticateToken, (req, res) => {
     let nom = req.body.nom;
     const query = `INSERT INTO organisateur (nomOrganisateur) VALUES ("${nom}")`;
     console.log(query);
@@ -32,7 +34,7 @@ router.post('/organisateur', (req, res) => {
 });
 
 /** Modifier un organisateur */
-router.put('/organisateur/:id', (req, res) => {
+router.put('/organisateur/:id', jwtModule.authenticateToken, (req, res) => {
     let nom = req.body.nom;
     const query = `UPDATE organisateur SET nomOrganisateur = "${nom}" WHERE idOrganisateur = '${req.params.id}'`;
     db.query(query, (err, result) => {
@@ -40,4 +42,14 @@ router.put('/organisateur/:id', (req, res) => {
         if (result) res.send({ message: "Organisateur modifié" });
     })
 });
+
+/** Supprimer un organisateur */
+router.delete('/organisateur/:id', jwtModule.authenticateToken, (req, res) => {
+    const query = `DELETE FROM organisateur WHERE idOrganisateur = '${req.params.id}'`;
+    db.query(query, (err, result) => {
+        if (err) res.status(403).send(err.sqlMessage);
+        if (result) res.send({ message: "Organisateur supprimé" });
+    })
+});
+
 module.exports = router;

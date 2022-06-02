@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
-// const evenements = require("../services/evenements");
 const db = require("../services/db");
+const jwtModule = require("../middlewares/jwt");
 
+
+/** Récupérer tous les événements */
 router.get("/evenements", async (req, res, next) => {
   // const event = evenements.getEvenement().then((res) => {
   //   console.log("res===>", res);
@@ -35,6 +37,8 @@ router.get("/evenements", async (req, res, next) => {
     }
   );
 });
+
+/** Récupérer un événement par id */
 router.get("/evenement/:id", async (req, res, next) => {
   let idEvenement = req.params.id;
   const eventById = db.query(
@@ -65,8 +69,53 @@ router.get("/evenement/:id", async (req, res, next) => {
     }
   );
 });
+
+/** Récupérer les événements auxquels un user est inscrit */
+router.get('/evenements/participant/:id', jwtModule.authenticateToken, (req, res) => {
+  if(req.params.id == undefined || null) res.status(401).send({message: 'Invalid id'});
+  const query = `SELECT evenement.idEvenement, evenement.description , evenement.titre, evenement.date, Evenement.nbPlaces, Evenement.image, Lieu.nomLieu, Lieu.ville, Organisateur.nomOrganisateur
+  FROM evenement 
+  JOIN Organisateur ON Evenement.idOrganisateur = Organisateur.idOrganisateur
+  JOIN Lieu ON Evenement.idLieu = Lieu.idLieu
+  LEFT JOIN Participant_Evenement ON Evenement.idEvenement = Participant_Evenement.idEvenement
+  WHERE Participant_Evenement.idParticipant =  ${req.params.id}
+  GROUP BY Evenement.idEvenement;`;
+  db.query(query, (err, result) => {
+    if (err) res.status(403).send(err.sqlMessage);
+    if (result) res.send({ message: "Evénements récupérés", evenements: result });
+  });
+});
+
+/** Créer un événement */
+router.post('/evenement', jwtModule.authenticateToken, (req, res) => {
+  let titre = req.body.titre;
+  let date = req.body.date;
+  let nbPlaces = req.body.nbPlaces;
+  let description = req.body.description;
+  let image = req.body.image;
+  let idLieu = req.body.idLieu;
+  let idOrganisateur = req.body.idOrganisateur;
+
+  // requête sql
+  const query = `INSERT INTO evenement (titre, date, nbPlaces, description, image, idLieu, idOrganisateur) VALUES ("${titre}", "${date}", "${nbPlaces}", "${description}", "${image}", "${idLieu}", "${idOrganisateur}")`;
+  db.query(query, (err, result) => {
+    if (err) res.status(403).send(err.sqlMessage);
+    if (result) res.send({ message: "Evénement créé" });
+  });
+});
+
+/** S'inscrire à un événement */
+router.post('/evenement/participant/:idEvent/:idParticipant', jwtModule.authenticateToken, (req, res) => {
+  const query = `INSERT INTO participant_evenement (idParticipant, idEvenement) VALUES ("${req.params.idParticipant}", "${req.params.idEvent}")`;
+  db.query(query, (err, result) => {
+    if (err) res.status(403).send(err.sqlMessage);
+    if (result) res.send({ message: "Inscription à l'événement validée" });
+  })
+});
+
+/** Se désinscrire d'un événement */
 router.delete(
-  "/evenement/participant/:idEvent/:idParticipant",
+  "/evenement/participant/:idEvent/:idParticipant", jwtModule.authenticateToken,
   (req, res, next) => {
     let idParticipant = req.params.idParticipant;
     let idEvent = req.params.idEvent;
@@ -92,5 +141,14 @@ router.delete(
     );
   }
 );
+
+/** Supprimer un événement */
+router.delete('/evenement/:id', jwtModule.authenticateToken, (req, res) => {
+  const query = `DELETE FROM evenement WHERE idEvenement = '${req.params.id}'`;
+  db.query(query, (err, result) => {
+    if (err) res.status(403).send(err.sqlMessage);
+    if (result) res.send({ message: "User supprimé" });
+  })
+});
 
 module.exports = router;

@@ -14,7 +14,7 @@ const authenticateToken = (req, res, next) => {
     authHeader.split(" ")[1];
 
   if (token == null) {
-    res.status(401);
+    res.status(401).send({message: "Token missing"});
   }
 
   jwt.verify(token, TOKEN_SECRET, (err, user) => {
