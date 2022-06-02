@@ -142,6 +142,29 @@ router.delete(
   }
 );
 
+/** Modifier un événement */
+router.put('/evenement/:id', jwtModule.authenticateToken,  (req, res) => {
+  if(req.body.titre == null || undefined) {res.status(401).send({message : "Titre manquant"}); return};
+  if(req.body.date == null || undefined) {res.status(401).send({message : "Date manquante"}); return};
+  if(req.body.nbPlaces == null || undefined) {res.status(401).send({message : "Nombre de places manquant"}); return};
+  if(req.body.description == null || undefined) {res.status(401).send({message : "Description manquante"}); return};
+  if(req.body.image == null || undefined) {res.status(401).send({message : "Url de l'image manquante"}); return};
+  if(req.body.idLieu == null || undefined) {res.status(401).send({message : "Id du lieu manquant"}); return};
+  if(req.body.idOrganisateur == null || undefined) {res.status(401).send({message : "Id de l'organisateur manquant"}); return};
+  let titre = req.body.titre;
+  let date = req.body.date;
+  let nbPlaces = req.body.nbPlaces;
+  let description = req.body.description;
+  let image = req.body.image;
+  let idLieu = req.body.idLieu;
+  let idOrganisateur = req.body.idOrganisateur;
+  const query = `UPDATE participant SET titre = "${titre}", date = "${date}", nbPlaces = "${nbPlaces}", description = "${description}", image = "${image}",  idLieu = "${idLieu}", idOrganisateur = "${idOrganisateur}" WHERE idEvenement = '${req.params.id}'`;
+  db.query(query, (err, result) => {
+      if (err) res.status(403).send(err.sqlMessage);
+      if (result) res.send({ message: "User modifié" });
+  })
+});
+
 /** Supprimer un événement */
 router.delete('/evenement/:id', jwtModule.authenticateToken, (req, res) => {
   const query = `DELETE FROM evenement WHERE idEvenement = '${req.params.id}'`;

@@ -35,6 +35,7 @@ router.post('/organisateur', jwtModule.authenticateToken, (req, res) => {
 
 /** Modifier un organisateur */
 router.put('/organisateur/:id', jwtModule.authenticateToken, (req, res) => {
+    if(req.body.nom == null || undefined) {res.status(401).send({message : "Nom de l'organisateur manquant"}); return};
     let nom = req.body.nom;
     const query = `UPDATE organisateur SET nomOrganisateur = "${nom}" WHERE idOrganisateur = '${req.params.id}'`;
     db.query(query, (err, result) => {

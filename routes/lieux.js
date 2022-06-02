@@ -24,6 +24,8 @@ router.get('/lieu/:id', (req, res) => {
 
 /** Ajouter un lieu */
 router.post('/lieu', jwtModule.authenticateToken, (req, res) => {
+    if(req.body.nom == null || undefined) {res.status(401).send({message : "Nom du lieu manquant"}); return};
+    if(req.body.ville == null || undefined) {res.status(401).send({message : "Ville manquante"}); return};
     let nom = req.body.nom;
     let ville = req.body.ville;
     const query = `INSERT INTO lieu (nomLieu, ville) VALUES ("${nom}", "${ville}")`;
