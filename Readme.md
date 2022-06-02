@@ -44,7 +44,7 @@
 
 
 ## Récupérer les événements
-### Route GET /evenements
+### Route GET /evenements/:idParticipant
 
 ## Récupérer un évenement avec son id
 ### Route GET /evenement/:id
