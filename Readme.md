@@ -9,7 +9,7 @@
     Body : 
     {
     	email: "toto@toto.fr",
-    	mdp: "tototest"
+    	motDePasse: "tototest"
     }
 
 ## Créer un utilisateur
